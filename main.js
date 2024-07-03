@@ -2,7 +2,7 @@ const { app, BrowserWindow, ipcMain} = require("electron");
 const path = require("path");
 
 let mainWindow
-let BLEDevicesWindow;
+let BluetoothDevicesWindow;
 let BLEDevicesList=[];
 
 let callbackForBluetoothEvent = null;
@@ -40,7 +40,7 @@ function createWindow() {
             } else {
               BLEDevicesList.push(element);
               console.log(BLEDevicesList);
-              if (!BLEDevicesWindow) {
+              if (!BluetoothDevicesWindow) {
                 createBLEDevicesWindow(); // open new window to show devices
               }
             }
@@ -56,7 +56,7 @@ function createWindow() {
 }
 
 function createBLEDevicesWindow() {
-  BLEDevicesWindow = new BrowserWindow({
+  BluetoothDevicesWindow = new BrowserWindow({
     width: 300,
     height: 400,
     parent: mainWindow,
@@ -66,14 +66,14 @@ function createBLEDevicesWindow() {
       nodeIntegration: false, // is default value after Electron v5
       contextIsolation: true, // protect against prototype pollution
       enableRemoteModule: false, // turn off remote
-      preload: path.join(__dirname, "BLEDevicesPreload.js"), // use a preload script
+      preload: path.join(__dirname, "BluetoothDevicesPreload.js"), // use a preload script
     },
   });
 
-  BLEDevicesWindow.loadFile("BLEDevicesWindow.html");
+  BluetoothDevicesWindow.loadFile("BluetoothDevicesWindow.html");
 
-  BLEDevicesWindow.on('close', function () {
-    BLEDevicesWindow = null;    
+  BluetoothDevicesWindow.on('close', function () {
+    BluetoothDevicesWindow = null;    
     callbackForBluetoothEvent("");
     BLEDevicesList = [];
   })
@@ -107,9 +107,9 @@ ipcMain.on("BLEScannFinished", (event, args) => {
 });
 
 ipcMain.on("getBLEDeviceList", (event, args) => {
-  if (BLEDevicesWindow)
+  if (BluetoothDevicesWindow)
   {
-    BLEDevicesWindow.webContents.send("BLEDeviceList", BLEDevicesList);
+    BluetoothDevicesWindow.webContents.send("BLEDeviceList", BLEDevicesList);
   }
 });
 
